@@ -10,12 +10,11 @@ namespace DataGrid;
  * @license    New BSD License
  * @package    Nette\Extras\DataGrid
  */
-interface IAction
-{
-	/**
-	 * Gets action element template.
-	 * @return Nette\Web\Html
-	 */
-	function getHtml();
+interface IAction {
 
+        /**
+         * Gets action element template.
+         * @return Nette\Web\Html
+         */
+        function getHtml();
 }

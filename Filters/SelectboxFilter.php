@@ -1,6 +1,7 @@
 <?php
 
 namespace DataGrid\Filters;
+
 use Nette;
 
 /**
@@ -12,95 +13,90 @@ use Nette;
  * @example    http://addons.nette.org/datagrid
  * @package    Nette\Extras\DataGrid
  */
-class SelectboxFilter extends ColumnFilter
-{
-	/** @var array  asociative array of items in selectbox */
-	protected $generatedItems;
+class SelectboxFilter extends ColumnFilter {
 
-	/** @var array  asociative array of items in selectbox */
-	protected $items;
+        /** @var array  asociative array of items in selectbox */
+        protected $generatedItems;
 
-	/** @var bool */
-	protected $translateItems;
+        /** @var array  asociative array of items in selectbox */
+        protected $items;
 
-	/** @var bool */
-	protected $firstEmpty;
+        /** @var bool */
+        protected $translateItems;
 
+        /** @var bool */
+        protected $firstEmpty;
 
-	/**
-	 * Selectbox filter constructor.
-	 * @param  array   items from which to choose
-	 * @param  bool    add empty first item to selectbox?
-	 * @param  bool    translate all items in selectbox?
-	 * @return void
-	 */
-	public function __construct(array $items = NULL, $firstEmpty = TRUE, $translateItems = TRUE)
-	{
-		$this->items = $items;
-		$this->firstEmpty = $firstEmpty;
-		$this->translateItems = $translateItems;
-		parent::__construct();
-	}
+        /**
+         * Selectbox filter constructor.
+         * @param  array   items from which to choose
+         * @param  bool    add empty first item to selectbox?
+         * @param  bool    translate all items in selectbox?
+         * @return void
+         */
+        public function __construct(array $items = NULL, $firstEmpty = TRUE, $translateItems = TRUE) {
+                $this->items = $items;
+                $this->firstEmpty = $firstEmpty;
+                $this->translateItems = $translateItems;
+                parent::__construct();
+        }
 
+        /**
+         * Generates selectbox items.
+         * @return array
+         */
+        public function generateItems() {
+                // NOTE: don't generate if was items given in constructor
+                if (is_array($this->items))
+                        return;
 
-	/**
-	 * Generates selectbox items.
-	 * @return array
-	 */
-	public function generateItems()
-	{
-		// NOTE: don't generate if was items given in constructor
-		if (is_array($this->items)) return;
+                $dataGrid = $this->lookup('DataGrid\DataGrid');
+                $items = $dataGrid->getDataSource()->getFilterItems($this->getName());
+                $this->generatedItems = $this->firstEmpty ? array_merge(array('' => '?'), $items) : $items;
 
-		$dataGrid = $this->lookup('DataGrid\DataGrid');
-		$items = $dataGrid->getDataSource()->getFilterItems($this->getName());
-		$this->generatedItems = $this->firstEmpty ? array_merge(array('' => '?'), $items) : $items;
+                // if was data grid already filtered by this filter don't update with filtred items (keep full list)
+                if (empty($this->element->value)) {
+                        $this->element->setItems($this->generatedItems);
+                }
 
-		// if was data grid already filtered by this filter don't update with filtred items (keep full list)
-		if (empty($this->element->value)) {
-			$this->element->setItems($this->generatedItems);
-		}
+                return $this->items;
+        }
 
-		return $this->items;
-	}
+        /**
+         * Returns filter's form element.
+         * @return Nette\Forms\Controls\BaseControl
+         */
+        public function getFormControl() {
+                if ($this->element instanceof Nette\Forms\Controls\BaseControl)
+                        return $this->element;
+                $this->element = new Nette\Forms\Controls\SelectBox($this->getName(), $this->items);
 
+                // prepare items
+                if ($this->items === NULL) {
+                        $this->generateItems();
+                }
 
-	/**
-	 * Returns filter's form element.
-	 * @return Nette\Forms\FormControl
-	 */
-	public function getFormControl()
-	{
-		if ($this->element instanceof Nette\Forms\FormControl) return $this->element;
-		$this->element = new Nette\Forms\SelectBox($this->getName(), $this->items);
+                // skip first item?
+                if ($this->firstEmpty) {
+                        $this->element->setPrompt('?');
+                }
 
-		// prepare items
-		if ($this->items === NULL) {
-			$this->generateItems();
-		}
+                // translate items?
+                if (!$this->translateItems) {
+                        $this->element->setTranslator(NULL);
+                }
 
-		// skip first item?
-		if ($this->firstEmpty) {
-			$this->element->skipFirst('?');
-		}
+                return $this->element;
+        }
 
-		// translate items?
-		if (!$this->translateItems) {
-			$this->element->setTranslator(NULL);
-		}
+        /**
+         * Translate all items in selectbox?
+         * @param  bool
+         * @return DataGrid\Filters\SelectboxFilter  provides a fluent interface
+         */
+        public function translateItems($translate) {
+                $this->translateItems = (bool) $translate;
+                return $this;
+        }
 
-		return $this->element;
-	}
-
-
-	/**
-	 * Translate all items in selectbox?
-	 * @param  bool
-	 * @return DataGrid\Filters\SelectboxFilter  provides a fluent interface
-	 */
-	public function translateItems($translate)
-	{
-		$this->translateItems = (bool) $translate;
-		return $this;
-	}
 }

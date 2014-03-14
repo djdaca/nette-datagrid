@@ -11,16 +11,16 @@ namespace DataGrid\Filters;
  * @example    http://addons.nette.org/datagrid
  * @package    Nette\Extras\DataGrid
  */
-class DateFilter extends TextFilter
-{
-	/**
-	 * Returns filter's form element.
-	 * @return Nette\Forms\FormControl
-	 */
-	public function getFormControl()
-	{
-		parent::getFormControl();
-		$this->element->getControlPrototype()->addClass('datepicker');
-		return $this->element;
-	}
+class DateFilter extends TextFilter {
+
+        /**
+         * Returns filter's form element.
+         * @return Nette\Forms\FormControl
+         */
+        public function getFormControl() {
+                parent::getFormControl();
+                $this->element->getControlPrototype()->addClass('datepicker');
+                return $this->element;
+        }
+
 }

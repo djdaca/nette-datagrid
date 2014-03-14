@@ -10,13 +10,12 @@ namespace DataGrid\Renderers;
  * @license    New BSD License
  * @package    Nette\Extras\DataGrid
  */
-interface IRenderer
-{
-	/**
-	 * Provides complete data grid rendering.
-	 * @param  DataGrid\Datagrid
-	 * @return string
-	 */
-	function render(\DataGrid\DataGrid $dataGrid);
+interface IRenderer {
 
+        /**
+         * Provides complete data grid rendering.
+         * @param  DataGrid\Datagrid
+         * @return string
+         */
+        function render(\DataGrid\DataGrid $dataGrid);
 }
